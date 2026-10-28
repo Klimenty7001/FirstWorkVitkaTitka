@@ -1,0 +1,560 @@
+/* ============================================================
+   МАСТЕР ВИКТОР — «Бумажный коллаж» v3
+   Swiss Punk × Paper Cut Collage × Clean UX
+   Структура: токены → база → кнопки → hero → секции → reveal
+   ============================================================ */
+
+/* ===== Локальные шрифты (кириллица, font-display: swap) ===== */
+@font-face{
+  font-family:"Unbounded";
+  src:url("../fonts/unbounded-800.woff2") format("woff2");
+  font-weight:800;font-style:normal;font-display:swap;
+}
+@font-face{
+  font-family:"Manrope";
+  src:url("../fonts/manrope.woff2") format("woff2");
+  font-weight:200 800;font-style:normal;font-display:swap;
+}
+@font-face{
+  font-family:"Caveat";
+  src:url("../fonts/caveat-600.woff2") format("woff2");
+  font-weight:600;font-style:normal;font-display:swap;
+}
+@font-face{
+  font-family:"Caveat";
+  src:url("../fonts/caveat-600.woff2") format("woff2");
+  font-weight:600;font-style:normal;font-display:swap;
+}
+
+/* ===== Токены ===== */
+:root{
+  --bg:#F4F1EA;
+  --ink:#264653;
+  --teal:#1E7B67;
+  --teal-lift:#238A72;
+  --teal-dark:#155F4E;
+  --teal-soft:#E2EEE9;
+  --blue:#2B59C3;
+  --blue-dark:#1F3F8F;
+  --yellow:#E9C46A;
+  --yellow-soft:#F6E9C4;
+  --pink:#E5B3A5;
+  --orange:#F47735;
+  --white:#FFFFFF;
+  --paper:#FDFCF7;
+  --muted:#5A6B70;
+  --hard:7px 7px 0 rgba(38,70,83,.10);
+  --hard-sm:4px 4px 0 rgba(38,70,83,.10);
+  --line:rgba(38,70,83,.16);
+  /* рваный бумажный край (кнопки) */
+  --cut:polygon(1.8% 8%,22% 2.5%,47% 7%,72% 1.5%,98% 6%,100% 38%,98.6% 63%,99.6% 92%,76% 98%,51% 93.5%,24% 99%,1.4% 94%,0 62%,2.2% 34%);
+  /* единая механика движения */
+  --ease-out:cubic-bezier(.22,.75,.25,1);
+  --ease-spring:cubic-bezier(.3,1.4,.55,1);
+}
+
+/* ===== Сброс и база ===== */
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+html,body{overflow-x:clip}
+body{
+  margin:0;
+  background:var(--bg) url("../assets/paper-texture.webp") repeat;
+  background-size:512px;
+  color:var(--ink);
+  font:400 1.0625rem/1.65 "Manrope",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+}
+img{max-width:100%;height:auto;display:block}
+p{margin:0 0 1em}
+a{color:var(--teal)}
+:focus-visible{outline:3px solid var(--blue);outline-offset:3px;border-radius:6px}
+::selection{background:var(--yellow);color:var(--ink)}
+.container{max-width:1150px;margin-inline:auto;padding-inline:clamp(16px,4.5vw,32px)}
+.skip{
+  position:absolute;left:-9999px;top:0;z-index:200;
+  background:var(--ink);color:#fff;padding:.8em 1.3em;border-radius:0 0 12px 0;
+  font-weight:700;text-decoration:none;
+}
+.skip:focus{left:0}
+
+/* ===== Типографика ===== */
+h1,h2{font-family:"Unbounded","Manrope",system-ui,Arial,sans-serif;font-weight:800;margin:0 0 .55em}
+h1{font-size:clamp(1.66rem,1.05rem + 3.4vw,3.3rem);line-height:1.17;letter-spacing:-.005em}
+h2{font-size:clamp(1.4rem,1.12rem + 1.6vw,2.1rem);line-height:1.24;letter-spacing:-.005em}
+h3{font-family:"Manrope",Arial,sans-serif;font-weight:800;font-size:1.16rem;line-height:1.35;margin:0 0 .4em}
+.mark{
+  background-image:linear-gradient(var(--yellow),var(--yellow));
+  background-repeat:no-repeat;background-size:100% .3em;background-position:0 88%;
+  padding-inline:.05em;
+}
+
+/* ============================================================
+   КНОПКИ — плотные бумажные плашки.
+   Лицо (::before) и жёсткая тень-подложка (::after) с одним
+   рваным контуром; при наведении лицо приподнимается с тени,
+   при нажатии — вдавливается. Двигается только transform.
+   ============================================================ */
+.btn{
+  position:relative;z-index:0;
+  display:inline-flex;align-items:center;justify-content:center;gap:.5em;
+  max-width:100%;padding:1.02em 1.6em;border:0;margin:0;
+  font-family:"Manrope",Arial,sans-serif;font-weight:800;
+  font-size:clamp(1.05rem,1rem + .4vw,1.18rem);line-height:1.25;
+  text-align:center;text-decoration:none;color:#fff;cursor:pointer;
+  background:none;-webkit-tap-highlight-color:transparent;
+}
+.btn::before,
+.btn::after{
+  content:"";position:absolute;inset:0;z-index:-1;
+  clip-path:var(--cut);background:var(--teal);
+  transition:transform .18s var(--ease-out),background-color .18s ease;
+}
+.btn::after{z-index:-2;background:var(--teal-dark);transform:translate(6px,7px);transition:none}
+.btn:active::before{transform:translate(4px,5px)}
+@media (hover:hover) and (pointer:fine){
+  .btn:hover::before{transform:translate(-2px,-3px);background:var(--teal-lift)}
+}
+
+/* второстепенная: светлая бумага + зелёный контур-кайма */
+.btn--ghost{color:var(--ink);filter:drop-shadow(4px 5px 0 rgba(30,123,103,.20))}
+.btn--ghost::before{inset:2px;background:var(--paper);transition:background-color .18s ease}
+.btn--ghost::after{background:var(--teal);transform:translate(0,0)}
+.btn--ghost:active{transform:translateY(1px)}
+@media (hover:hover) and (pointer:fine){
+  .btn--ghost:hover{transform:translateY(-2px)}
+  .btn--ghost:hover::before{background:#fff}
+}
+
+/* ===== Общие бумажные элементы ===== */
+.tape{position:absolute;width:86px;height:auto;z-index:6;pointer-events:none}
+.hl-teal{
+  display:inline-block;color:#fff;background:var(--teal);
+  padding:.1em .42em .18em;transform:rotate(-1.8deg);
+  clip-path:polygon(1.6% 12%,24% 0,50% 9%,76% 1%,98.4% 10%,100% 40%,97.6% 64%,99.6% 88%,95.4% 100%,68% 93%,40% 100%,14% 94%,1.2% 98%,0 66%,2.4% 36%);
+}
+.hl-pink{
+  display:inline-block;background:var(--pink);
+  padding:.03em .3em .09em;transform:rotate(-1.1deg);
+  clip-path:polygon(2% 18%,30% 2%,56% 12%,82% 0,98% 12%,100% 48%,98% 78%,99% 96%,72% 100%,44% 92%,18% 100%,0 90%,1.6% 52%);
+}
+.halftone{
+  position:absolute;border-radius:50%;pointer-events:none;
+  background-image:radial-gradient(rgba(30,123,103,.42) 1.6px,transparent 1.7px);
+  background-size:15px 15px;
+}
+/* «Залипательный» растр: два слоя точек медленно плывут навстречу
+   друг другу со сдвигом ровно на одну ячейку сетки (бесшовный цикл).
+   Пересечение двух решёток даёт живой муаровый узор. Только transform. */
+.halftone::before,
+.halftone::after{
+  content:"";position:absolute;inset:-20px;border-radius:50%;
+  pointer-events:none;
+  background-image:radial-gradient(rgba(30,123,103,.55) 1.7px,transparent 1.8px);
+  background-size:15px 15px;
+}
+.halftone::after{
+  background-image:radial-gradient(rgba(43,89,195,.38) 1.4px,transparent 1.5px);
+  background-size:19px 19px;
+}
+@media (prefers-reduced-motion:no-preference){
+  .halftone::before{animation:dots-a 8s linear infinite}
+  .halftone::after{animation:dots-b 13s linear infinite}
+}
+@keyframes dots-a{from{transform:translate(0,0)}to{transform:translate(15px,15px)}}
+@keyframes dots-b{
+  0%{transform:translate(0,0) scale(1)}
+  50%{transform:translate(-9.5px,9.5px) scale(1.07)}
+  100%{transform:translate(-19px,19px) scale(1)}
+}
+
+/* ===== Шапка (на мобильных скрыта — звонок в нижней панели) ===== */
+.site-head .container{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:14px}
+.brand{margin:0;font-weight:800;font-size:1.05rem;letter-spacing:-.01em}
+.brand small{font-weight:600;color:var(--muted);font-size:.88rem}
+.head-phone{font-weight:800;font-size:1.06rem;color:var(--teal);text-decoration:none;white-space:nowrap}
+.head-phone:hover{text-decoration:underline}
+
+/* ============================================================
+   ПЕРВЫЙ ЭКРАН — бумажный постер.
+   Интро-последовательность (~880 мс, чистый CSS, работает и
+   без JS): заголовок → ленты и пятна → Виктор и машинка →
+   стрелка. Базовые стили = конечное состояние, поэтому при
+   reduced-motion всё просто видно.
+   ============================================================ */
+.hero{position:relative;padding-block:clamp(20px,3.5vw,52px) clamp(26px,4.5vw,64px)}
+.hero-grid{display:grid;gap:clamp(30px,4.5vw,52px);align-items:center}
+@media (min-width:940px){.hero-grid{grid-template-columns:1.04fr .96fr}}
+
+.status{
+  position:relative;display:inline-flex;align-items:center;gap:.55em;
+  background:var(--white);padding:.52em 1.15em;border-radius:10px;
+  transform:rotate(-1.6deg);box-shadow:var(--hard-sm);
+  font-weight:700;font-size:.97rem;margin:0 0 1.35em;
+}
+.status .tape{width:62px;top:-17px;left:26px;transform:rotate(-8deg)}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--teal);flex:none;animation:pulse 2.6s ease-out infinite}
+@keyframes pulse{
+  0%{box-shadow:0 0 0 0 rgba(30,123,103,.45)}
+  70%{box-shadow:0 0 0 9px rgba(30,123,103,0)}
+  100%{box-shadow:0 0 0 0 rgba(30,123,103,0)}
+}
+.hero-title{margin:0 0 .5em}
+.lead{font-size:clamp(1.05rem,1rem + .4vw,1.22rem);font-weight:500;max-width:31em;margin:0 0 1.6em}
+.cta-row{position:relative;display:inline-block;max-width:100%}
+.cta-arrow{position:absolute;width:62px;height:auto;right:-82px;top:-36px;transform:rotate(155deg);z-index:2;pointer-events:none;transition:transform .25s var(--ease-spring)}
+@media (hover:hover) and (pointer:fine){
+  .cta-row .btn:hover + .cta-arrow{transform:rotate(155deg) translate(5px,-4px)}
+}
+/* рукописный акцент (Caveat) — заметка справа от кнопки */
+.hand-note{
+  position:absolute;right:-150px;bottom:16px;z-index:2;
+  font-family:"Caveat",cursive;font-weight:600;font-size:1.55rem;line-height:1;
+  color:var(--teal);transform:rotate(-7deg);pointer-events:none;white-space:nowrap;
+}
+@media (max-width:1330px){.hand-note{display:none}}
+.btn-note{margin:1em 0 0;font-size:.95rem;color:var(--muted);max-width:30em}
+
+/* --- коллаж справа --- */
+.hero-fig{position:relative;margin:0}
+.viktor{position:relative;z-index:2;width:min(100%,540px);height:auto;margin-inline:auto;aspect-ratio:1080/883}
+.hero-fig .halftone{width:46%;aspect-ratio:1;top:-5%;right:-2%}
+.blob{
+  position:absolute;z-index:1;width:56%;aspect-ratio:1.12;left:-4%;bottom:3%;
+  background:var(--yellow);transform:rotate(7deg);
+  border-radius:47% 53% 58% 42%/46% 44% 56% 54%;
+}
+.machine{position:absolute;z-index:3;width:36%;right:-3%;bottom:-9%;transform:rotate(4deg);height:auto}
+.drop-art{position:absolute;z-index:3;width:9%;left:47%;bottom:-8%;transform:rotate(-14deg)}
+.tape-hero{position:absolute;z-index:4;width:15%;top:-3.5%;left:19%;transform:rotate(-6deg)}
+
+/* мобильная композиция: Виктор указывает вниз — на кнопку */
+@media (max-width:939px){
+  .viktor{width:min(100%,470px);aspect-ratio:1080/883}
+  .hero-fig .halftone{width:42%;top:-3%;right:-1%}
+  .blob{width:50%;left:1%;bottom:1%}
+  .machine{width:36%;right:-2%;bottom:-10%}
+  .drop-art{width:8.5%;left:42%;bottom:-9%}
+  .tape-hero{width:72px;top:-12px;left:7%}
+  .cta-arrow{display:none}
+}
+@media (min-width:940px){.hero-copy{padding-bottom:14px}}
+
+@media (prefers-reduced-motion:no-preference){
+  .status,.hero-title,.lead,.cta-row,.btn-note,
+  .hero-fig .halftone,.blob,.tape-hero,.viktor,.machine,.drop-art,.cta-arrow{
+    animation-duration:.45s;animation-timing-function:var(--ease-out);animation-fill-mode:backwards;
+  }
+  .hero-title{animation-name:hero-up}
+  .cta-row{animation-name:hero-up;animation-delay:.06s}
+  .status{animation-name:hero-status;animation-delay:.07s}
+  .lead{animation-name:hero-up;animation-delay:.14s}
+  .btn-note{animation-name:hero-up;animation-delay:.22s}
+  .hero-fig .halftone{animation-name:hero-fade;animation-delay:.16s}
+  .blob{animation-name:hero-blob;animation-delay:.2s;animation-duration:.5s}
+  .tape-hero{animation-name:hero-tape;animation-delay:.24s;animation-duration:.4s}
+  .viktor{animation-name:hero-viktor;animation-delay:.26s;animation-duration:.5s}
+  .hand-note{animation-name:hero-up;animation-delay:.5s;animation-duration:.4s}
+  .machine{animation-name:hero-machine;animation-delay:.34s;animation-duration:.5s}
+  .drop-art{animation-name:hero-drop;animation-delay:.42s;animation-duration:.4s}
+  .cta-arrow{animation-name:hero-arrow;animation-delay:.56s;animation-duration:.32s;animation-timing-function:var(--ease-spring)}
+}
+@keyframes hero-up{from{opacity:0;transform:translateY(14px)}}
+@keyframes hero-fade{from{opacity:0}}
+@keyframes hero-status{from{opacity:0;transform:rotate(-4.5deg) translateY(9px) scale(.97)}}
+@keyframes hero-blob{from{opacity:0;transform:rotate(0deg) scale(.9)}}
+@keyframes hero-tape{from{opacity:0;transform:rotate(-15deg) translateY(-9px) scale(.88)}}
+@keyframes hero-viktor{from{opacity:0;transform:translateY(16px) rotate(-2deg) scale(.98)}}
+@keyframes hero-machine{from{opacity:0;transform:rotate(0deg) translateY(18px)}}
+@keyframes hero-drop{from{opacity:0;transform:rotate(-32deg) scale(.85)}}
+@keyframes hero-arrow{from{opacity:0;transform:rotate(128deg) scale(.82)}}
+
+/* ===== Бегущая бумажная лента (бесшовный CSS-marquee) =====
+   Два одинаковых сегмента; track сдвигается ровно на -50% =>
+   цикл без стыка. Движется только transform. */
+.ticker{
+  position:relative;z-index:5;
+  width:108%;margin-left:-4%;
+  --r:-1.3deg;transform:rotate(var(--r));
+  background:var(--teal);
+  box-shadow:0 6px 0 rgba(38,70,83,.10);
+  overflow:hidden;
+  margin-block:clamp(10px,2.5vw,22px) clamp(2px,1vw,10px);
+}
+.ticker__track{
+  display:flex;width:max-content;
+  animation:ticker-move 36s linear infinite;
+}
+.ticker__seg{
+  flex:none;white-space:nowrap;padding:.9em 0;
+  color:#EAF6F1;
+  font:800 clamp(.6rem,.45rem + .8vw,.8rem)/1 "Unbounded",Arial,sans-serif;
+  letter-spacing:.13em;text-transform:uppercase;
+}
+@keyframes ticker-move{to{transform:translateX(-50%)}}
+
+/* ===== Секции ===== */
+.section{padding-block:clamp(46px,7vw,92px)}
+.section--mint{background:#E7EFEA}
+.section--sand{background:#ECE7DB}
+.section-head{max-width:44em;margin-bottom:clamp(6px,1.5vw,12px)}
+.section-sub{color:var(--muted);font-size:1.05rem;margin:0}
+
+/* ===== Преимущества — листы с лёгким разворотом ===== */
+.cards{display:grid;gap:clamp(18px,2.6vw,26px);margin-top:clamp(24px,3.5vw,40px)}
+.card{
+  --r:-1.1deg;
+  position:relative;background:var(--white);border-radius:8px;
+  padding:1.7rem 1.55rem 1.5rem;box-shadow:var(--hard);
+  transform:translateY(var(--ty,0px)) rotate(var(--r));
+  transition:transform .22s var(--ease-out),box-shadow .22s ease;
+}
+.card:nth-child(2){--r:1deg;background:#FCFAF4}
+
+/* третья карточка — вырезка из настоящей крафт-бумаги (фото),
+   текст — рукописный Caveat, как подпись на бумажке */
+.card--tape{
+  --r:-1.4deg;
+  background:#D9BC8F url("../assets/kraft-paper.webp") center/cover;
+  padding-top:2.4rem;
+}
+.card--tape h3{
+  font-family:"Caveat",cursive;font-weight:600;
+  font-size:1.95rem;line-height:1.12;color:#463213;margin-bottom:.3em;
+}
+.card--tape p{
+  font-family:"Caveat",cursive;font-weight:600;
+  font-size:1.38rem;line-height:1.28;color:#54401D;margin:0;
+}
+.card--tape .tape{width:88px;top:-21px;left:50%;transform:translateX(-50%) rotate(-5deg)}
+@media (hover:hover) and (pointer:fine){
+  .card:hover{
+    transform:translateY(calc(var(--ty,0px) - 6px)) rotate(calc(var(--r) + var(--hd,1deg)));
+    box-shadow:10px 12px 0 rgba(38,70,83,.13);
+  }
+  .card:nth-child(2){--hd:-1deg}
+}
+.cards .card-num{
+  display:block;font-family:"Unbounded",Arial,sans-serif;font-weight:800;
+  font-size:.76rem;letter-spacing:.2em;color:rgba(38,70,83,.32);margin-bottom:1.05rem;
+}
+.card--tape .card-num{color:rgba(150,115,40,.55)}
+.scrap{
+  --r:-3deg;
+  display:grid;place-items:center;width:66px;height:66px;border-radius:10px;
+  margin-bottom:1.15rem;box-shadow:var(--hard-sm);
+  transform:rotate(var(--r));
+}
+.scrap--teal{background:var(--teal-soft)}
+.scrap--blue{--r:2.5deg;background:var(--blue-soft)}
+.scrap img{width:auto;height:50px;object-fit:contain}
+.card p{margin:0;color:var(--muted);font-size:1rem}
+@media (min-width:760px){
+  .cards{grid-template-columns:repeat(3,1fr)}
+  .card:nth-child(2){--ty:16px}
+}
+
+/* ===== Цены — прозрачный белый лист ===== */
+.prices-sheet{
+  --r:0deg;
+  background:var(--white);border-radius:10px;box-shadow:var(--hard);
+  padding:.3rem clamp(14px,3vw,30px);
+  margin-top:clamp(20px,3vw,32px);
+  transform:translateY(var(--ty,0px)) rotate(var(--r));
+}
+.prices-sheet table{width:100%;border-collapse:collapse}
+.prices-sheet th{
+  font-weight:800;font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;
+  text-align:left;color:var(--muted);padding:1.1rem .4rem .65rem;
+  border-bottom:2px solid rgba(38,70,83,.2);
+}
+.prices-sheet td{
+  padding:.95rem .4rem;border-bottom:2px dotted rgba(38,70,83,.3);
+  vertical-align:middle;font-weight:500;
+}
+.prices-sheet tr:last-child td{border-bottom:0}
+.prices-sheet th:last-child,.prices-sheet td:last-child{text-align:right}
+.price{font-weight:800;white-space:nowrap;font-size:1.04rem}
+.price--free{color:var(--teal)}
+.price-note{
+  --r:-.7deg;
+  position:relative;
+  background:#D9BC8F url("../assets/kraft-paper.webp") center/cover;
+  border-radius:8px;
+  box-shadow:var(--hard-sm);padding:1.15rem 1.4rem 1rem;
+  max-width:46em;margin:1.7em .1em 2em;
+  transform:translateY(var(--ty,0px)) rotate(var(--r));
+}
+.price-note p{
+  margin:0;font-family:"Caveat",cursive;font-weight:600;
+  font-size:1.48rem;line-height:1.25;color:#463213;
+}
+.price-note .tape{width:64px;top:-19px;left:24px;transform:rotate(-7deg)}
+.center{text-align:center}
+
+/* ============================================================
+   ЗНАКОМСТВО — адаптивная композиция с жестом Виктора.
+   ≥820px: [ВИКТОР →] [заголовок + текст + CTA] (жест вправо).
+   <820px: [ВИКТОР] сверху, палец вниз — на текст под ним.
+   Одна семантическая секция, переключение только картинкой.
+   ============================================================ */
+.meet{position:relative}
+.meet-grid{
+  position:relative;display:grid;align-items:center;
+  gap:clamp(22px,4vw,48px);
+}
+.meet-fig{position:relative;margin:0;width:min(78vw,400px);justify-self:center}
+.meet-fig .halftone{width:46%;aspect-ratio:1;right:-5%;top:-7%}
+.meet-img{position:relative;z-index:1;width:100%;height:auto;aspect-ratio:900/646}
+.meet-tape{width:78px;top:-20px;left:56%;transform:rotate(-6deg)}
+.meet-note .sign{display:block;width:fit-content;margin:1.1em 0 1.2em}
+@media (min-width:820px){
+  .meet-grid{grid-template-columns:minmax(280px,392px) 1fr;gap:clamp(32px,5vw,64px)}
+  .meet-fig{width:100%;justify-self:start}
+  .meet-img{aspect-ratio:1000/734}
+  .meet-tape{width:86px;top:-24px;left:58%}
+}
+.sign{
+  display:inline-block;font-family:"Caveat",cursive;font-weight:600;
+  font-size:2rem;line-height:1;color:var(--teal);margin:1.1em 0 0;transform:rotate(-2.4deg);
+}
+.note p{max-width:38em}
+.screw-decor{--r:-9deg;position:absolute;right:clamp(6px,4vw,52px);bottom:-12px;width:150px;height:auto;transform:rotate(var(--r))}
+@media (max-width:819px){.screw-decor{display:none}}
+
+/* ===== Отзывы ===== */
+.reviews{text-align:center}
+.reviews .section-head{margin-inline:auto}
+.reviews .section-sub{max-width:36em;margin-inline:auto}
+.reviews-arrow{--r:112deg;width:62px;height:auto;margin:.5em auto .3em;transform:rotate(var(--r))}
+.price-cta{display:flex;flex-wrap:wrap;gap:14px 18px;justify-content:center;align-items:center}
+.price-cta .btn{font-size:1.02rem}
+
+/* ===== Scroll-linked микро-эффекты (нативные CSS scroll-driven) =====
+   Работают только в поддерживающих браузерах (@supports),
+   в остальных — статичное базовое состояние. */
+@supports (animation-timeline:view()){
+  @media (prefers-reduced-motion:no-preference){
+    .reviews-arrow{
+      animation:arrow-drift linear both;
+      animation-timeline:view();animation-range:entry 0% entry 70%;
+    }
+    .screw-decor{
+      animation:screw-drift linear both;
+      animation-timeline:view();animation-range:entry 0% cover 45%;
+    }
+    .footer::before{
+      animation:dots-drift linear both;
+      animation-timeline:view();animation-range:entry 0% cover 60%;
+    }
+  }
+}
+@keyframes arrow-drift{from{transform:rotate(128deg) translateY(16px)}to{transform:rotate(112deg) translateY(0)}}
+@keyframes screw-drift{from{transform:rotate(-13deg) translateX(18px)}to{transform:rotate(-9deg) translateX(0)}}
+@keyframes dots-drift{from{transform:translate(26px,26px)}to{transform:translate(0,0)}}
+.reviews .btn{margin-top:.4em}
+
+/* ===== Подвал ===== */
+.footer{
+  position:relative;background:var(--ink);color:#F2F5F4;
+  border-radius:28px 28px 0 0;margin-top:clamp(10px,2vw,26px);
+  padding:clamp(40px,6vw,64px) 0 clamp(30px,4vw,44px);overflow:hidden;
+}
+.footer::before{
+  content:"";position:absolute;right:-70px;top:-70px;width:250px;height:250px;border-radius:50%;
+  background-image:radial-gradient(rgba(233,196,106,.32) 1.5px,transparent 1.6px);
+  background-size:14px 14px;
+}
+.footer-grid{display:grid;gap:clamp(22px,4vw,48px);position:relative}
+@media (min-width:820px){.footer-grid{grid-template-columns:1.25fr .75fr}}
+.f-name{font-family:"Unbounded",Arial,sans-serif;font-weight:800;font-size:1.16rem;line-height:1.35;color:#fff;margin:0 0 .9em}
+.footer p{color:rgba(242,245,244,.82);max-width:44em;margin:0 0 .8em}
+.f-phone-label{
+  font-weight:800;font-size:.76rem;letter-spacing:.16em;text-transform:uppercase;
+  color:rgba(242,245,244,.55);margin:0 0 .5em;
+}
+.f-phone{
+  display:inline-block;font-family:"Unbounded",Arial,sans-serif;font-weight:800;
+  font-size:clamp(1.5rem,1.15rem + 2vw,2.25rem);line-height:1.2;
+  color:#fff;text-decoration:none;margin:0 0 .9em;
+}
+.f-phone:hover{color:var(--yellow)}
+.f-yandex{color:var(--yellow);font-weight:700;text-decoration:none;border-bottom:2px solid rgba(233,196,106,.4);transition:border-color .15s ease}
+.f-yandex:hover{border-color:var(--yellow)}
+.copy{color:rgba(242,245,244,.5);font-size:.85rem;margin:1.8em 0 0!important}
+
+/* ===== Плавающая бумажная CTA-наклейка (мобильные) =====
+   Компактная, асимметричная, не на всю ширину. Тень через
+   drop-shadow на ссылке, рваный край — clip-path на ::before. */
+.call-fab{
+  position:fixed;right:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));
+  z-index:150;display:none;
+  align-items:center;gap:.5em;
+  min-height:48px;padding:.72em 1.25em;
+  color:#fff;text-decoration:none;
+  font-family:"Manrope",Arial,sans-serif;font-weight:800;font-size:1rem;line-height:1;
+  filter:drop-shadow(4px 5px 0 rgba(38,70,83,.28));
+  transform:rotate(-1.6deg);
+  -webkit-tap-highlight-color:transparent;
+}
+.call-fab::before{
+  content:"";position:absolute;inset:0;z-index:-1;background:var(--teal);
+  clip-path:polygon(2.4% 14%,26% 3%,52% 10%,78% 1%,97.6% 9%,100% 42%,98% 68%,99% 94%,74% 99%,48% 92%,22% 100%,1.6% 92%,0 60%,2% 34%);
+  transition:transform .18s var(--ease-out),background-color .18s ease;
+}
+.call-fab:active{transform:rotate(-1.6deg) scale(.96)}
+.call-fab__ic{font-size:1.05rem}
+@media (max-width:939px){
+  .call-fab{display:inline-flex}
+  body{padding-bottom:calc(26px + env(safe-area-inset-bottom,0px))}
+}
+
+/* ============================================================
+   SCROLL REVEAL — «раскладываем и приклеиваем на лист».
+   Прогрессивное улучшение: скрытое состояние активно только
+   при html.js-anim (класс ставит JS после успешной инициали-
+   зации). После появления JS снимает data-reveal, и элемент
+   возвращается к базовым стилям — hover работает мгновенно.
+   ============================================================ */
+@media (prefers-reduced-motion:no-preference){
+  /* Скрытое состояние: элемент ещё ни разу не показан ИЛИ повторный
+     (was-in снят при выходе из экрана) — на этом основан replay. */
+  html.js-anim [data-reveal]:not(.is-in):not(.was-in){opacity:0}
+  html.js-anim [data-reveal="paper-drop"]:not(.is-in):not(.was-in){
+    transform:translateY(calc(var(--ty,0px) + 26px)) rotate(calc(var(--r,0deg) + 3deg));
+  }
+  html.js-anim [data-reveal="sticker-pop"]:not(.is-in):not(.was-in){
+    transform:translateY(var(--ty,0px)) rotate(calc(var(--r,0deg) - 4deg)) scale(.94);
+  }
+  html.js-anim [data-reveal="editorial"]:not(.is-in):not(.was-in){transform:translateY(22px)}
+  html.js-anim [data-reveal="tape"]:not(.is-in):not(.was-in){transform:rotate(var(--r,0deg)) scaleX(.66);transform-origin:0 50%}
+
+  html.js-anim [data-reveal].is-in{
+    opacity:1;
+    transform:translateY(var(--ty,0px)) rotate(var(--r,0deg));
+    transition:opacity .62s var(--ease-out),transform .62s var(--ease-out);
+  }
+  html.js-anim [data-reveal="sticker-pop"].is-in{
+    transition:opacity .5s var(--ease-spring),transform .5s var(--ease-spring);
+  }
+  html.js-anim [data-reveal="tape"].is-in{
+    transition:opacity .78s var(--ease-out),transform .78s var(--ease-out);
+  }
+}
+
+/* ===== Адаптив ===== */
+@media (max-width:600px){
+  .site-head{display:none}
+  .prices-sheet td{padding-inline:.15rem;font-size:.98rem}
+  .price{font-size:.98rem}
+  .price-cta .btn{font-size:.98rem}
+}
+@media (max-width:359px){
+  .btn{font-size:1rem;padding:.9em 1.15em}
+  .status{font-size:.9rem}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  /* лента остаётся статичной и читаемой */
+  .ticker__track{transform:none}
+}
